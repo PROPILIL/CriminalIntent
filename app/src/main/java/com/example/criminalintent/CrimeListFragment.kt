@@ -5,7 +5,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProviders
@@ -49,18 +51,40 @@ class CrimeListFragment: Fragment() {
         crimeRecyclerView.adapter = adapter
     }
 
-    private inner class CrimeHolder(view: View): RecyclerView.ViewHolder(view){
+    private inner class CrimeHolder(view: View): RecyclerView.ViewHolder(view),
+        View.OnClickListener {
 
         private lateinit var crime: Crime
 
         val titleTextView: TextView = itemView.findViewById(R.id.crime_title)
         val dateTextView: TextView = itemView.findViewById(R.id.crime_date)
+        val solvedImageId: ImageView = itemView.findViewById(R.id.crime_solved)
+
+        init {
+            itemView.setOnClickListener(this)
+        }
 
         fun bind(crime: Crime){
             this.crime = crime
             titleTextView.text = this.crime.title
             dateTextView.text = this.crime.date.toString()
+            solvedImageId.visibility = if (crime.isSolved){
+                View.VISIBLE
+            } else{
+                View.GONE
+            }
         }
+
+        override fun onClick(p0: View?) {
+            Toast.makeText(context, "${crime.title} pressed",
+                Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun getItemViewType(position : Int): Int{
+        var viewType: Int = 1
+        if(position == 0) viewType = 0
+        return viewType
     }
 
     private inner class CrimeAdapter(var crimes: List<Crime>): RecyclerView.Adapter<CrimeHolder>(){
